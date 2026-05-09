@@ -21,11 +21,9 @@ public class PriorityQuestIterator implements QuestIterator {
 
     @Override
     public boolean hasNext() {
-        return cursor<snapshot.size();
-    }
+        return cursor<snapshot.size();}
 
     @Override
-    public Quest next() {
-        return hasNext()?snapshot.get(cursor++):null;
-    }
+    public Quest next(){
+        return hasNext()?snapshot.get(cursor++):null;}
 }
