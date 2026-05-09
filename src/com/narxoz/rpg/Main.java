@@ -1,20 +1,38 @@
 package com.narxoz.rpg;
 
-/**
- * Entry point for Homework 10 — The Adventurers' Guild: Iterator + Mediator.
- *
- * The scaffold prints the banner only; students fill in the guild demo.
- */
+import com.narxoz.rpg.combatant.Hero;
+import com.narxoz.rpg.council.CouncilEngine;
+import com.narxoz.rpg.guild.*;
+import com.narxoz.rpg.quest.*;
+import java.util.List;
+
 public class Main {
-
     public static void main(String[] args) {
-        System.out.println("=== Homework 10 Demo: Iterator + Mediator ===");
+        List<Hero> party=List.of(new Hero("Adi",100,20,15), new Hero("Partner",80, 15, 10));
 
-        // 1. Create at least 2 heroes.
-        // 2. Build a QuestLog with at least 5 quests of mixed priority.
-        // 3. Register at least 4 GuildMembers (Quartermaster, Scout, Healer, Captain) on the GuildHall.
-        // 4. Iterate the quest log with at least 2 different QuestIterator implementations.
-        // 5. Dispatch coordinating messages through the mediator during quest planning.
-        // 6. Run the CouncilEngine and print a final CouncilRunResult.
-    }
+        QuestLog log=new QuestLog();
+        log.add(new Quest("Rat Problem", QuestPriority.LOW, 10, false));
+        log.add(new Quest("Dragon Hunt", QuestPriority.URGENT,5000,true));
+        log.add(new Quest("Save the Village", QuestPriority.HIGH,1000, false));
+        log.add(new Quest("Decipher Runes", QuestPriority.NORMAL, 200, false));
+        log.add(new Quest("Final Boss", QuestPriority.HIGH,2000,true));
+
+        GuildHall hall=new GuildHall();
+        Captain captain =new Captain("Leon", hall);
+        Scout scout =new Scout("Swift",hall);
+        new Healer("Mercy",hall);
+        new Quartermaster("Hogger", hall);
+        new Loremaster("Deckard",hall);
+
+        System.out.println("--- Sorted by Reward (Extension) ---");
+        QuestIterator rewardIt=new RewardSortedQuestIterator(log);
+        while(rewardIt.hasNext()) System.out.println("Quest: "+rewardIt.next());
+
+        CouncilEngine engine=new CouncilEngine();
+        var result=engine.runCouncil(party, log, hall);
+
+        System.out.println("\n--- Out-of-Council Communication ---");
+        captain.issueOrder("ORDERS", "Prepare for Dragon Hunt!");
+        hall.dispatch("LORE", scout, "Found ancient markings on the cave wall.");
+        System.out.println("\n" + result);}
 }
